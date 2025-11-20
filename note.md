@@ -2,7 +2,24 @@
 
 ---
 
-## A. Network Configuration IP Address
+## A. Network Topology
+
+Here is the network  topology for out Network Security Challenge.
+
+```mermaid
+graph TD;
+    NAT1-->EdgeRouter;
+    EdgeRouter-->Firewall;
+    Firewall-->Admin & Mahasiswa & Akademik & Riset&IoT & Guest & DMZ;
+    Admin-->Switch1-->AuthenticationServer & MonitoringServer & PCA-DMIN;
+    Akademik-->Switch2-->FileServer & DatabaseServer;
+    Riset&IoT-->Switch3-->IoTBroker & LabServer;
+    Mahasiswa-->Switch4-->PC-MAHASISWA1 & PC-MAHASISWA2;
+	Guest-->Switch5-->PC-GUEST1 & PC-GUEST2;
+	DMZ-->Switch6-->PublicWebServer & MailServer;
+```
+
+## B. Network Configuration IP Address
 
 ### 1. Router Interfaces & Gateways
 
@@ -47,7 +64,7 @@ This table will explain the **CIDR** allocations.
 
 ---
 
-## B. Network Defense Layers
+## C. Network Defense Layers
 
 ### 1. Perimeter Defense (Edge Router)
 
@@ -100,7 +117,7 @@ You divided the network into "Zones" based on trust levels.
 
 ---
 
-## C. Network Defense Layers Testing
+## D. Network Defense Layers Testing
 
 ### 1. Perimeter Defense Testing
 
@@ -157,7 +174,7 @@ Other than the 3rd step from above, we can also use this method:
 
 ---
 
-## Firewall Configurations & Testing
+## E. Firewall Configurations & Testing
 
 ### 1. Firewall Rules 
 
@@ -199,3 +216,363 @@ ping 10.20.20.1 src-address=10.20.40.1 size=1200 count=100 interval=0.05
 - **Limit:** None.
 - **Result:** **0% Loss**
 
+## F. Network Defense Layers Testing
+
+### 1. Mahasiswa Service
+
+#### a. Mahasiswa's Internet Availability
+
+This test is to test the Mahasiswa's service if it can access the internet through the Firewall's **Rule 22** to confirm if the NAT on EdgeRouter is working or not. 
+
+**Firewall Rule 22**
+
+```bash
+22    ;;; MHS -> Internet
+      chain=from_mahasiswa action=accept out-interface=ether1
+```
+
+**Test Command**
+
+```bash 
+ping 8.8.8.8
+```
+
+![mahasiswa-nat-availability](images/mahasiswa-nat-availability.png)
+
+> [!NOTE]
+> **Expected Result:** Ping's success means that that NAT on EdgeRouter is working properly
+
+#### b. Mahasiswa's Internal DNS
+
+This test is to test the Mahasiwa's service if it's DNS Resolution working properly as it is configured on Firewall's **Rule 19 & 20**.
+
+**Firewall Rule 19 & 20**
+
+```bash
+19    ;;; MHS -> DNS (Internal)
+      chain=from_mahasiswa action=accept protocol=udp dst-address=10.20.60.11 dst-port=53
+
+20    ;;; MHS -> DNS (Internal)
+      chain=from_mahasiswa action=accept protocol=tcp dst-address=10.20.60.11 dst-port=53
+```
+
+**Test Command**
+
+```bash
+nslookup google.com
+```
+
+![mahasiswa-nslookup-dns](images/mahasiswa-nslookup-dns.png)
+
+```bash
+ping google.com
+```
+
+![mahasiswa-ping-google-dns](images/mahasiswa-ping-google-dns.png)
+
+> [!note]
+> **Expected Result:**  If successfully ran, it means the DNS Resolution was successful
+
+#### c. Mahasiswa's Network Segementation 
+
+Here the test is to verify the Firewall's **Rule 21** that blocks the Mahasiswa's access to every internal network.
+
+```bash
+21    ;;; BLOCK MHS -> Internal Networks
+      chain=from_mahasiswa action=drop dst-address=10.0.0.0/8
+```
+
+> [!note]
+> **Expected Result:** If the result are blocked, it verifies the **Rule 21** of the Firewall's
+
+##### Block Access to Admin Zone
+
+Here the Mahasiswa should NOT be able to access the Admin Zone because college students are not admins. The test are simply by pinging the Admin Router Gateway (`10.20.40.1`) and the Authentication Server (`10.20.40.10`).
+
+```bash
+ping 10.20.40.1
+```
+
+![mahasiswa-ping-admin-blocked](images/mahasiswa-ping-admin-blocked.png)
+
+```bash
+ping 10.20.40.10
+```
+
+
+![mahasiswa-ping-authentication-admin-blocked](images/mahasiswa-ping-authentication-admin-blocked.png)
+
+##### Block to Akademik Zone
+
+Here the Mahasiswa should NOT be able to access the Akademik Zone because in the Akademik Zone there are important/sensitive data that is saved there, where it should be strictly protected. We can test this by simply pinging to the Akademik Gateway (`10.20.20.1`)
+
+```bash
+ping 10.20.20.1
+```
+
+![mahasiswa-ping-akademik-blocked](images/mahasiswa-ping-akademik-blocked.png)
+
+##### Block to IoT & Research Zone
+
+Here the Mahasiswa should NOT be able to access the IoT Zone because in the IoT & Research Zone there are sensitive IoT and Research data that is being received and transmitted. We can test this by simply pinging to the IoT & Research Gateway (`10.20.30.1`)
+
+```bash
+ping 10.20.30.1
+```
+
+![mahasiswa-ping-iot-blocked](images/mahasiswa-ping-iot-blocked.png)
+
+#### d. Mahasiswa's Device Hardening
+
+The test here is to make sure that college students can't login as admin to the Mahasiswa's Service Router nor can it even slightly access the login page of the Mahasiswa's Router. The test here is simply by testing the `ssh` and the `web` service to the Mahasiswa's Router (`10.20.10.1`).
+
+> [!note]
+> **Expected Result:** the `ssh` and the `web` service here, both, should be inaccessible.
+
+##### SSH Service
+
+Here, by configuring the Mahasiwa Router to not open the SSH Service to other networks except for the request that comes from the Mahasiswa Router, it will be unaccessible by End Devices from the Mahasiswa's Router. 
+
+**Test Command**
+
+```bash
+ssh admin@10.20.10.1
+```
+
+![mahasisswa-ssh-closed](images/mahasisswa-ssh-closed.png)
+
+##### Web Service
+
+For the web service itself, since the Admins doesn't need the web service, it is better to just disable the service entirely then leaving one open unattended. By disabling the whole service entirely, it will guarantee the safety of the service (since there's none accessible to begin with).
+
+**Test Command**
+
+```bash
+curl http://10.20.10.1
+```
+
+![mahasiswa-curl-closed](images/mahasiswa-curl-closed.png)
+
+### 2. Akademik Service
+
+#### a. Akademik's "Smart" Access
+
+Here, from the Akademik Zone, the staffs could monitor IoT Devices in the IoT & Research Zone. This mean from the Akademik Zone, it can communicate to IoT & Research Zone.  We can test this out by pinging to the IoT & Research Zone of the Broker's Server (since we're trying to gather data from it), which has `10.20.30.10` IP Address.
+
+**Related Firewall Rule**
+
+```bash
+17    ;;; Akademik -> IoT (Data Collection)
+      chain=from_akademik action=accept dst-address-list=NET_IOT
+```
+
+**Test Command**
+
+```bash
+ping 10.20.30.10
+```
+
+![akademik-ping-broker-success](images/akademik-ping-broker-success.png)
+
+> [!note]
+> **Expected Results:** This test should return successfully pinging to the Broker's server (`10.20.30.10`).  This confirms the Firewall's **Rule 17**.
+
+#### b. Akademik's Network Segmentation
+
+Here, the Admin should not be accessible to the Akademik staff. This can be simply tested by pinging the Admin's Gateway (`10.20.40.1`). This rule should be enforced by the Firewall's **Rule 18**.
+
+**Related Rule**
+
+```bash
+18    ;;; DROP Akademik -> Any Internal
+      chain=from_akademik action=drop dst-address=10.0.0.0/8
+```
+
+**Test Command**
+
+```bash
+ping 10.20.40.1
+```
+
+![akademik-ping-admin-bbocked](images/akademik-ping-admin-bbocked.png)
+
+> [!note]
+> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 18** is running properly.
+
+#### c. Akademik's Lateral Movement
+
+Here, the Akademik staff shouldn't be able to access the Mahasiswa either since it staff shouldn't be able to poke around the Mahasiswa's privacy. Here,  Firewall's **Rule 18** is the one being enforced. 
+
+**Related Rule**
+
+```bash
+18    ;;; DROP Akademik -> Any Internal
+      chain=from_akademik action=drop dst-address=10.0.0.0/8
+```
+
+**Test Command**
+
+```bash
+ping 10.20.10.1
+```
+
+![akademik-ping-mahasiswa-blocked](images/akademik-ping-mahasiswa-blocked.png)
+
+> [!note]
+> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 18** is running properly as well like the previous test.
+
+#### d. Akademik's Internet Availability
+
+Akademik should be able to gain access to the internet like all of the other services is able to.
+
+**Test Command**
+
+```bash
+ping 8.8.8.8
+```
+
+![akademik-internet-availability](images/akademik-internet-availability.png)
+
+**Bonus**
+
+```bash
+ping google.com
+```
+
+![akademik-ping-dns-resolved](images/akademik-ping-dns-resolved.png)
+
+> [!note]
+> **Expected Result:** The result should return successful so that the Akademik's staff can be connected to the internet like any other network services.
+
+#### e. Akademik's Device Hardening
+
+Just like the Mahasiwa's Router, the Akademik's router should be secured so that the `web` and `ssh`service won't lead to a vulnerable access admin access to the Router. The method is also the same with how to secure the Mahasiswa's Router. This time the target will be the Akademik's Router default gateway, `10.20.20.1`
+
+```bash
+curl http://10.20.20.1
+```
+
+![akademik-web-service-closed](images/akademik-web-service-closed.png)
+
+```bash
+ssh admin@10.20.20.1
+```
+
+
+![akademik-ssh-service-blocked](images/akademik-ssh-service-blocked.png)
+
+> [!note]
+> **Expected Result:** Both service should be blocked from access from the End Device.
+
+### 3. Admin Service
+
+#### a. Admin's Internet Availability
+
+Admin should be able to gain access to the internet like all of the other services is able to.
+
+**Test Command**
+
+```bash
+ping 8.8.8.8
+```
+
+
+
+**Bonus**
+
+```bash
+ping google.com
+```
+
+![akademik-ping-dns-resolved](images/akademik-ping-dns-resolved.png)
+
+
+
+#### a. Admin's "Smart" Access
+
+Here, from the Akademik Zone, the staffs could monitor IoT Devices in the IoT & Research Zone. This mean from the Akademik Zone, it can communicate to IoT & Research Zone.  We can test this out by pinging to the IoT & Research Zone of the Broker's Server (since we're trying to gather data from it), which has `10.20.30.10` IP Address.
+
+**Related Firewall Rule**
+
+```bash
+17    ;;; Akademik -> IoT (Data Collection)
+      chain=from_akademik action=accept dst-address-list=NET_IOT
+```
+
+**Test Command**
+
+```bash
+ping 10.20.30.10
+```
+
+![akademik-ping-broker-success](images/akademik-ping-broker-success.png)
+
+> [!note]
+> **Expected Results:** This test should return successfully pinging to the Broker's server (`10.20.30.10`).  This confirms the Firewall's **Rule 17**.
+
+#### b. Akademik's Network Segmentation
+
+Here, the Admin should not be accessible to the Akademik staff. This can be simply tested by pinging the Admin's Gateway (`10.20.40.1`). This rule should be enforced by the Firewall's **Rule 18**.
+
+**Related Rule**
+
+```bash
+18    ;;; DROP Akademik -> Any Internal
+      chain=from_akademik action=drop dst-address=10.0.0.0/8
+```
+
+**Test Command**
+
+```bash
+ping 10.20.40.1
+```
+
+![akademik-ping-admin-bbocked](images/akademik-ping-admin-bbocked.png)
+
+> [!note]
+> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 18** is running properly.
+
+#### c. Akademik's Lateral Movement
+
+Here, the Akademik staff shouldn't be able to access the Mahasiswa either since it staff shouldn't be able to poke around the Mahasiswa's privacy. Here,  Firewall's **Rule 18** is the one being enforced. 
+
+**Related Rule**
+
+```bash
+18    ;;; DROP Akademik -> Any Internal
+      chain=from_akademik action=drop dst-address=10.0.0.0/8
+```
+
+**Test Command**
+
+```bash
+ping 10.20.10.1
+```
+
+![akademik-ping-mahasiswa-blocked](images/akademik-ping-mahasiswa-blocked.png)
+
+> [!note]
+> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 18** is running properly as well like the previous test.
+
+> [!note]
+> **Expected Result:** The result should return successful so that the Akademik's staff can be connected to the internet like any other network services.
+
+#### e. Akademik's Device Hardening
+
+Just like the Mahasiwa's Router, the Akademik's router should be secured so that the `web` and `ssh`service won't lead to a vulnerable access admin access to the Router. The method is also the same with how to secure the Mahasiswa's Router. This time the target will be the Akademik's Router default gateway, `10.20.20.1`
+
+```bash
+curl http://10.20.20.1
+```
+
+![akademik-web-service-closed](images/akademik-web-service-closed.png)
+
+```bash
+ssh admin@10.20.20.1
+```
+
+
+![akademik-ssh-service-blocked](images/akademik-ssh-service-blocked.png)
+
+> [!note]
+> **Expected Result:** Both service should be blocked from access from the End Device.
