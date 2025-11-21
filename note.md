@@ -174,48 +174,6 @@ Other than the 3rd step from above, we can also use this method:
 
 ---
 
-## E. Firewall Configurations & Testing
-
-### 1. Firewall Rules 
-
-### 2. Firewall Testing
-
-#### a. IoT & Riset
-
-1. **Testing Ping Rate Limit**
-
-```bash
-ping 10.20.20.1 src-address=10.20.30.1 size=1200 count=100 interval=0.05
-```
-
-- **Attack Speed:** 20 pps.
-- **Limit:** 5 pps.
-- **Result:** **Heavy Loss (~75%)**.
-
-#### b. Akademik
-
-1. Testing Ping Rate Limit
-
-```bash 
-ping 10.20.30.1 src-address=10.20.20.1 size=1200 count=100 interval=0.05
-```
-
-- **Attack Speed:** 20 pps.
-- **Limit:** 15 pps.
-- **Result:** **Light/No Loss (~0-25%)**.
-
-#### c. Admin
-
-1. Testing Ping Rate Limit
-
-```bash
-ping 10.20.20.1 src-address=10.20.40.1 size=1200 count=100 interval=0.05
-```
-
-- **Attack Speed:** 20 pps.
-- **Limit:** None.
-- **Result:** **0% Loss**
-
 ---
 
 ## F. Network Defense Layers Testing
