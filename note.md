@@ -11,9 +11,9 @@ graph TD;
     NAT1-->EdgeRouter;
     EdgeRouter-->Firewall;
     Firewall-->Admin & Mahasiswa & Akademik & Riset&IoT & Guest & DMZ;
-    Admin-->Switch1-->AuthenticationServer & MonitoringServer & PCA-DMIN;
-    Akademik-->Switch2-->FileServer & DatabaseServer;
-    Riset&IoT-->Switch3-->IoTBroker & LabServer;
+    Admin-->Switch1-->AuthenticationServer & MonitoringServer & PC-ADMIN;
+    Akademik-->Switch2-->FileServer & DatabaseServer & PC-AKADEMIK;
+    Riset&IoT-->Switch3-->IoTBroker & LabServer & PC-RISETDANIOT;
     Mahasiswa-->Switch4-->PC-MAHASISWA1 & PC-MAHASISWA2;
 	Guest-->Switch5-->PC-GUEST1 & PC-GUEST2;
 	DMZ-->Switch6-->PublicWebServer & MailServer;
@@ -216,6 +216,8 @@ ping 10.20.20.1 src-address=10.20.40.1 size=1200 count=100 interval=0.05
 - **Limit:** None.
 - **Result:** **0% Loss**
 
+---
+
 ## F. Network Defense Layers Testing
 
 ### 1. Mahasiswa Service
@@ -298,7 +300,6 @@ ping 10.20.40.1
 ```bash
 ping 10.20.40.10
 ```
-
 
 ![mahasiswa-ping-authentication-admin-blocked](images/mahasiswa-ping-authentication-admin-blocked.png)
 
@@ -458,7 +459,6 @@ curl http://10.20.20.1
 ssh admin@10.20.20.1
 ```
 
-
 ![akademik-ssh-service-blocked](images/akademik-ssh-service-blocked.png)
 
 > [!note]
@@ -476,7 +476,7 @@ Admin should be able to gain access to the internet like all of the other servic
 ping 8.8.8.8
 ```
 
-
+![admin-router-ping-8.8.8.8](images/admin-router-ping-8.8.8.8.png)
 
 **Bonus**
 
@@ -484,95 +484,347 @@ ping 8.8.8.8
 ping google.com
 ```
 
-![akademik-ping-dns-resolved](images/akademik-ping-dns-resolved.png)
+![admin-router-ping-google](images/admin-router-ping-google.png)
 
+#### b. Admin's "Smart" Access
 
-
-#### a. Admin's "Smart" Access
-
-Here, from the Akademik Zone, the staffs could monitor IoT Devices in the IoT & Research Zone. This mean from the Akademik Zone, it can communicate to IoT & Research Zone.  We can test this out by pinging to the IoT & Research Zone of the Broker's Server (since we're trying to gather data from it), which has `10.20.30.10` IP Address.
+Here, from the Admin Zone, the admin could monitor all zone like Mahasiswa, Akademik, and IoT & Research Zone. This mean from the Admin Zone, it can communicate to Mahasiswa, Akademik, and IoT & Research Zone.  We can test this out by pinging to the Mahasiswa, Akademik, and IoT & Research Gateaway.
 
 **Related Firewall Rule**
 
 ```bash
-17    ;;; Akademik -> IoT (Data Collection)
-      chain=from_akademik action=accept dst-address-list=NET_IOT
+13    ;;; Admin -> ANY
+      chain=from_admin action=accept
 ```
 
 **Test Command**
-
-```bash
-ping 10.20.30.10
-```
-
-![akademik-ping-broker-success](images/akademik-ping-broker-success.png)
-
-> [!note]
-> **Expected Results:** This test should return successfully pinging to the Broker's server (`10.20.30.10`).  This confirms the Firewall's **Rule 17**.
-
-#### b. Akademik's Network Segmentation
-
-Here, the Admin should not be accessible to the Akademik staff. This can be simply tested by pinging the Admin's Gateway (`10.20.40.1`). This rule should be enforced by the Firewall's **Rule 18**.
-
-**Related Rule**
-
-```bash
-18    ;;; DROP Akademik -> Any Internal
-      chain=from_akademik action=drop dst-address=10.0.0.0/8
-```
-
-**Test Command**
-
-```bash
-ping 10.20.40.1
-```
-
-![akademik-ping-admin-bbocked](images/akademik-ping-admin-bbocked.png)
-
-> [!note]
-> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 18** is running properly.
-
-#### c. Akademik's Lateral Movement
-
-Here, the Akademik staff shouldn't be able to access the Mahasiswa either since it staff shouldn't be able to poke around the Mahasiswa's privacy. Here,  Firewall's **Rule 18** is the one being enforced. 
-
-**Related Rule**
-
-```bash
-18    ;;; DROP Akademik -> Any Internal
-      chain=from_akademik action=drop dst-address=10.0.0.0/8
-```
-
-**Test Command**
+_**Admin to Mahasiswa**_
 
 ```bash
 ping 10.20.10.1
 ```
 
-![akademik-ping-mahasiswa-blocked](images/akademik-ping-mahasiswa-blocked.png)
+![admin-ping-to-mahasiswa](images/admin-ping-to-mahasiswa.png)
 
-> [!note]
-> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 18** is running properly as well like the previous test.
-
-> [!note]
-> **Expected Result:** The result should return successful so that the Akademik's staff can be connected to the internet like any other network services.
-
-#### e. Akademik's Device Hardening
-
-Just like the Mahasiwa's Router, the Akademik's router should be secured so that the `web` and `ssh`service won't lead to a vulnerable access admin access to the Router. The method is also the same with how to secure the Mahasiswa's Router. This time the target will be the Akademik's Router default gateway, `10.20.20.1`
+_**Admin to Akademik**_
 
 ```bash
-curl http://10.20.20.1
+ping 10.20.20.1
 ```
 
-![akademik-web-service-closed](images/akademik-web-service-closed.png)
+![admin-ping-to-akademik](images/admin-ping-to-akademik.png)
+
+_**Admin to IoT & Research**_
 
 ```bash
-ssh admin@10.20.20.1
+ping 10.20.30.1
 ```
 
-
-![akademik-ssh-service-blocked](images/akademik-ssh-service-blocked.png)
+![admin-ping-to-iot-and-research](images/admin-ping-to-iot-and-research.png)
 
 > [!note]
-> **Expected Result:** Both service should be blocked from access from the End Device.
+> **Expected Results:** This test should return successfully pinging to the Mahasiswa (`10.20.10.1`), Akademik (`10.20.20.1`), and IoT & Research (`10.20.30.10`).  This confirms the Firewall's **Rule 13**.
+
+#### c. Admin's Device Hardening
+
+Not like the others Router, the Admin's router should access all router because rule 13 allows the packet to travel from Admin to all router. This time the target will be the Mahasiswa's Router default gateway, `10.20.10.1`
+
+```bash
+ssh admin@10.20.10.1
+```
+
+![admin-ssh-to-mahasiswa-password](images/admin-ssh-to-mahasiswa-password.png)
+![admin-ssh-to-mahasiswa-dashboard](images/admin-ssh-to-mahasiswa-dashboard.png)
+
+> [!note]
+> **Expected Result:** ssh service should be work to access all route and End Device.
+
+### 4. DMZ Service
+
+#### a. DMZ's Network Segmentation
+
+The DMZ should not be accessible to the Admin and Akamedik staff. This can be simply tested by pinging the Admin's (`10.20.40.1`) and Akademik's Gateway (`10.20.40.1`). This rule should be enforced by the Firewall's **Rule 30**.
+
+**Related Rule**
+
+```bash
+30    ;;; DROP DMZ -> Internal (Safety Net)
+      chain=from_dmz action=drop dst-address=10.0.0.0/8
+```
+
+**Test Command**
+_**DMZ to Admin**_
+
+```bash
+ping 10.20.40.1
+```
+
+![dmz-ping-to-admin](images/dmz-ping-to-admin.png)
+
+_**DMZ to Akademik**_
+
+```bash
+ping 10.20.20.1
+```
+
+![dmz-ping-to-akademik](images/dmz-ping-to-akademik.png)
+
+> [!note]
+> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 30** is running properly.
+
+#### b. DMZ's Internet Availability
+
+DMZ should be able to gain access to the internet like all of the other services is able to.
+
+**Test Command**
+
+```bash
+ping 8.8.8.8
+```
+
+![dmz-router-ping-8.8.8.8](images/dmz-router-ping-8.8.8.8.png)
+
+**Bonus**
+
+```bash
+ping google.com
+```
+
+![dmz-router-ping-google](images/dmz-router-ping-google.png)
+
+#### c. DMZ's Device Hardening
+
+the DMZ's router should be secured so the "hacker" cannot take over the gateway. 
+
+```bash
+ssh admin@10.20.60.1
+```
+
+![[dmz-ssh](images/dmz-ssh.png)]
+
+> [!note]
+> **Expected Result:** The service should be blocked. This confirms that even if your Web Server is hacked, your Router and your Internal Network remain safe.
+
+### 5. Guest Service
+
+#### a. Guest's Network Segmentation
+
+The DMZ should not be accessible to the Admin, IoT & Research and Akamedik staff. This can be simply tested by pinging the Admin's (`10.20.40.1`), IoT & Research (`10.20.30.1`) Akademik's Gateway (`10.20.40.1`). This rule should be enforced by the Firewall's **Rule 24**.
+
+**Related Rule**
+
+```bash
+24    ;;; BLOCK Guest -> Internal Networks
+      chain=from_guest action=drop dst-address=10.0.0.0/8
+```
+
+**Test Command**
+_**DMZ to Admin**_
+
+```bash
+ping 10.20.40.1
+```
+
+![guest-ping-to-admin](images/guest-ping-to-admin.png)
+
+_**DMZ to IoT & Research**_
+
+```bash
+ping 10.20.30.1
+```
+
+![guest-ping-to-iot](images/guest-ping-to-iot.png)
+
+_**DMZ to Akademik**_
+
+```bash
+ping 10.20.20.1
+```
+
+![guest-ping-to-akademik](images/guest-ping-to-akademik.png)
+
+> [!note]
+> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 24** is running properly.
+
+#### b. Guest's Internet Availability
+
+ Guest should be able to gain access to the internet like all of the other services is able to.
+
+**Test Command**
+
+```bash
+ping 8.8.8.8
+```
+
+![guest-router-ping-8.8.8.8](images/guest-router-ping-8.8.8.8.png)
+
+**Bonus**
+
+```bash
+ping google.com
+```
+
+![guest-router-ping-google](images/guest-router-ping-google.png)
+
+#### c. DMZ's Device Hardening
+
+the DMZ's router should be secured because Guests are often strangers. so we definitely don't want them trying to log into the router that provides their Wi-Fi.
+
+```bash
+ssh admin@10.20.50.1
+```
+
+![guest-ssh](images/guest-ssh.png)]
+
+> [!note]
+> **Expected Result:** The service should be blocked because we definitely don't want them trying to log into the router that provides their Wi-Fi.
+
+### 6. Riset & IoT Service
+
+#### a. Riset & IoT's Internet Availability
+
+ Riset & IoT should be able to gain access to the internet like all of the other services is able to.
+
+**Test Command**
+
+```bash
+ping 8.8.8.8
+```
+
+![risetdaniot-ping-availability](images/risetdaniot-ping-availability.png)
+
+**Bonus**
+
+```bash
+ping google.com
+```
+
+![risetdaniot-ping-google-success](images/risetdaniot-ping-google-success.png)
+
+#### a. Riset & IoT's Network Segmentation
+
+The Admin shouldn't be able to be accessed by Riset & IoT, so there woulnd't be any "infection" that can happen to Admin and the public server (DMZ) itself after Riset & IoT gets troubled. This can be simply tested by pinging the Admin's (`10.20.40.1`) and DMZ's (`10.20.60.1`) Gateway. This rule should be enforced by the Firewall's **Rule 28**.
+
+**Related Rule**
+
+```bash
+28    ;;; DROP IoT -> All Internal
+      chain=from_iot action=drop
+```
+
+**Test Command**
+_**Riset & IoT to Admin**_
+
+```bash
+ping 10.20.40.1
+```
+
+![guest-ping-to-admin](images/guest-ping-to-admin.png)
+
+_**Riset & IoT to DMZ**_
+
+```bash
+ping 10.20.60.1
+```
+
+![risetdaniot-segmentation-2-blocked](images/risetdaniot-segmentation-2-blocked.png)
+
+> [!note]
+> **Expected Results:** Here it should be blocked to confirm Firewall's **Rule 28** is running properly.
+
+#### c. Riset & IoT's Device Hardening
+
+the Riset & IoT's router should be secured because the Admin are the only that is supposed to be able to change the configuration on them.
+
+```bash
+ssh admin@10.20.30.1
+```
+
+![risetdaniot-ssh-blocked](images/risetdaniot-ssh-blocked.png)
+
+```bash
+curl http://10.20.30.1
+```
+
+![riset&iot-curl-blocked](images/riset&iot-curl-blocked.png)
+
+> [!note]
+> **Expected Result:** The service should be blocked because we definitely don't want them trying to log into the router as an Admin that is privileged.
+
+---
+
+## G. Network Attack Testing
+
+To test the effectiveness of our firewall, we need to test them out with real attacks. Here are the step-by-step attacks we're going to do: 
+
+**Prerequisite** Attack Tools Installation
+
+```bash 
+sudo apt update && sudo apt install nmap hping3 -y
+```
+
+### Attack Scenario 1: Reconnaissance (Port Scanning)
+
+Here the goal of the attacker is to try and map out the network to find open ports on the **Admin Router** or **File Server**. But if the Firewall is working as intended the **Rule 21 (Drop Mahasiswa --> Internal)** should silently drop these packets, making the scan incredibly slow or fail completely.
+
+1. **Attack (Run on PC-MAHASISWA)** to try and scan the Admin Gateway for open ports (SSH, Web, DNS, etc.). 
+
+```bash
+# -Pn: Treat host as online (skip ping)
+# -F: Fast scan (top 100 ports)
+sudo nmap -Pn -F 10.20.40.1
+```
+
+![attack-recon-port](images/attack-recon-port.png)
+
+- Result: "Filtered" here means that the firewall is eating the packets. If the port were just closed (no service running), it would say "Closed". "Filtered" proves that the firewall is **active**.
+
+### Attack 2: Denial of Service (DoS), SYN Flood
+
+Here is the goal of the attacker is to try and overwhelm the DMZ Web Server (`10.20.60.10`) with thousand of fake connection request (SYN Packets) to make it overloaded and crash. But if the Firewall is working as intended, the **Rule 21 (Drop Mahasiswa --> Internal)**
+
+1. **Two terminals preparation**
+
+ Open a second terminal to monitor the logging of the firewall and then run the command below to monitor the logging system of the firewall:
+
+```bash
+/log print follow
+```
+
+![attack-log-monitor-init](images/attack-log-monitor-init.png)
+
+2. **Launching the Attack (Run on PC-MAHASISWA)**
+
+```bash
+# -S: Send SYN packets
+# --flood: Send as fast as possible
+# -p 80: Target port 80 (HTTP)
+sudo hping3 -S --flood -V -p 80 10.20.60.10
+```
+
+![attack-log-monitor-pasca](images/attack-log-monitor-pasca.png)
+
+- Result: Now there it is showing a rapid stream of logs on the Firewall (`MHS_BLOCKED...`), which is the proof to show the firewall is working as intended.
+
+### Attack Scenario 3: Brute Force Attempt (Management Plane)
+
+The goal here is to try and brute-force the password for the Mahasiswa Router to take control of the gateway. But if the firewall is working as intended, it should reject the connection immediately. 
+
+1. **The Attack (Run on PC-MAHASISWA)** to use the Nmap's scripting engine to simulate a brute force login check attack on SSH (port 22).
+
+```bash
+# Check if SSH accepts credentials
+# -p 22: Target port
+# --script ssh-brute: Use the brute force script
+sudo nmap -p 22 --script ssh-brute 10.20.10.1
+```
+
+ Below is the attack result:
+
+![attack-brute-force-ssh](images/attack-brute-force-ssh.png)
+
+Here is when I tried running the debug (`-d`) feature to know where it is interrupted.
+
+![attack-brute-force-ssh-debug](images/attack-brute-force-ssh-debug.png)
+
+- Result: The attack immediately got brushed off, meaning that the brute-force attack didn't even get the chance to access the login form. As can be seen on the `debug`, it ran into an error when initiating a connection.
