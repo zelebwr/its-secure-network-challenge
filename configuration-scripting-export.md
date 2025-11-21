@@ -10,12 +10,14 @@ Here is the configuration export for the MikroTIk Router for the Edge Router
 
 ```bash
 [admin@EdgeRouter-ITS] > /export
-# 2025-11-20 06:43:48 by RouterOS 7.16
+# 2025-11-21 11:12:55 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
-set [ find default-name=ether1 ] comment="WAN - To Internet (GNS3 NAT Cloud)" disable-running-check=no
-set [ find default-name=ether2 ] comment="LAN - To Core Firewall (10.0.0.2)" disable-running-check=no
+set [ find default-name=ether1 ] comment="WAN - To Internet (GNS3 NAT Cloud)" \
+    disable-running-check=no
+set [ find default-name=ether2 ] comment="LAN - To Core Firewall (10.0.0.2)" disable-running-check=\
+    no
 set [ find default-name=ether3 ] disable-running-check=no
 set [ find default-name=ether4 ] disable-running-check=no
 set [ find default-name=ether5 ] disable-running-check=no
@@ -33,35 +35,30 @@ add address=10.0.0.2 list=SAFE_MANAGEMENT
 add address=10.1.40.0/30 list=SAFE_MANAGEMENT
 add address=10.20.40.0/24 list=SAFE_MANAGEMENT
 /ip firewall filter
-add action=accept chain=input comment="Allow Established Connections" connection-state=established,related
+add action=accept chain=input comment="Allow Established Connections" connection-state=\
+    established,related
 add action=accept chain=input comment="Allow Ping (Limited)" protocol=icmp
-add action=accept chain=input comment="Allow Management from Core Firewall Only" src-address=10.0.0.2
+add action=accept chain=input comment="Allow Management from Core Firewall Only" src-address=\
+    10.0.0.2
 add action=accept chain=input comment="Allow Admin Management" src-address-list=SAFE_MANAGEMENT
 add action=drop chain=input comment="DROP All External Access to Router" in-interface=ether1
 add action=drop chain=input comment="DROP ALL OTHER MANAGEMENT"
 /ip firewall nat
 add action=masquerade chain=srcnat out-interface=ether1
-add action=dst-nat chain=dstnat dst-port=80 in-interface=ether1 protocol=tcp to-addresses=10.20.60.10 to-ports=80
-add action=dst-nat chain=dstnat dst-port=443 in-interface=ether1 protocol=tcp to-addresses=10.20.60.10 to-ports=443
-add action=dst-nat chain=dstnat dst-port=53 in-interface=ether1 protocol=udp to-addresses=10.20.60.11 to-ports=53
-add action=dst-nat chain=dstnat dst-port=53 in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=53
-add action=dst-nat chain=dstnat dst-port=25 in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=25
-add action=dst-nat chain=dstnat dst-port=587 in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=587
-add action=dst-nat chain=dstnat dst-port=993 in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=993
-add action=dst-nat chain=dstnat comment="Port Forward HTTP to Web Server" dst-port=80 in-interface=ether1 protocol=tcp \
-    to-addresses=10.20.60.10 to-ports=80
-add action=dst-nat chain=dstnat comment="Port Forward HTTPS to Web Server" dst-port=443 in-interface=ether1 protocol=tcp \
-    to-addresses=10.20.60.10 to-ports=443
-add action=dst-nat chain=dstnat comment="Port Forward DNS to DNS Server" dst-port=53 in-interface=ether1 protocol=udp \
-    to-addresses=10.20.60.11 to-ports=53
-add action=dst-nat chain=dstnat comment="Port Forward DNS TCP to DNS Server" dst-port=53 in-interface=ether1 protocol=tcp \
-    to-addresses=10.20.60.11 to-ports=53
-add action=dst-nat chain=dstnat comment="Port Forward SMTP to Mail Server" dst-port=25 in-interface=ether1 protocol=tcp \
-    to-addresses=10.20.60.11 to-ports=25
-add action=dst-nat chain=dstnat comment="Port Forward Submission to Mail Server" dst-port=587 in-interface=ether1 protocol=tcp \
-    to-addresses=10.20.60.11 to-ports=587
-add action=dst-nat chain=dstnat comment="Port Forward IMAPS to Mail Server" dst-port=993 in-interface=ether1 protocol=tcp \
-    to-addresses=10.20.60.11 to-ports=993
+add action=dst-nat chain=dstnat comment="Port Forward HTTP to Web Server" dst-port=80 in-interface=\
+    ether1 protocol=tcp to-addresses=10.20.60.10 to-ports=80
+add action=dst-nat chain=dstnat comment="Port Forward HTTPS to Web Server" dst-port=443 \
+    in-interface=ether1 protocol=tcp to-addresses=10.20.60.10 to-ports=443
+add action=dst-nat chain=dstnat comment="Port Forward DNS to DNS Server" dst-port=53 in-interface=\
+    ether1 protocol=udp to-addresses=10.20.60.11 to-ports=53
+add action=dst-nat chain=dstnat comment="Port Forward DNS TCP to DNS Server" dst-port=53 \
+    in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=53
+add action=dst-nat chain=dstnat comment="Port Forward SMTP to Mail Server" dst-port=25 \
+    in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=25
+add action=dst-nat chain=dstnat comment="Port Forward Submission to Mail Server" dst-port=587 \
+    in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=587
+add action=dst-nat chain=dstnat comment="Port Forward IMAPS to Mail Server" dst-port=993 \
+    in-interface=ether1 protocol=tcp to-addresses=10.20.60.11 to-ports=993
 /ip route
 add comment="Router Links" dst-address=10.1.0.0/16 gateway=10.0.0.2
 add comment="Clients (Admin, Student, DMZ)" dst-address=10.20.0.0/18 gateway=10.0.0.2
@@ -84,7 +81,7 @@ Here is the configuration export for the MikroTik Router for the Firewall
 
 ```bash
 [admin@Firewall] > /export
-# 2025-11-20 12:57:40 by RouterOS 7.16
+# 2025-11-21 11:03:52 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
@@ -115,72 +112,62 @@ add address=10.20.48.0/22 list=NET_GUEST
 add address=10.20.60.0/24 list=NET_DMZ
 add address=10.1.0.0/16 list=NET_INFRA
 add address=10.1.40.2 comment="Admin Router Uplink" list=NET_ADMIN
+add address=10.1.60.2 comment="DMZ Router Uplink" list=NET_DMZ
 /ip firewall filter
-add action=accept chain=input comment="1 Allow established to firewall" connection-state=established,related
-add action=accept chain=input comment="2 Allow limited ping" limit=5,10:packet protocol=icmp
-add action=accept chain=input comment="3 Allow Edge Router" src-address=10.0.0.1
-add action=accept chain=input comment="4 Allow Admin access" src-address-list=NET_ADMIN
-add action=accept chain=input comment="5 Akademik HTTP monitor" dst-port=80 protocol=tcp src-address-list=NET_AKADEMIK
-add action=drop chain=input comment="6 Drop ICMP flood" protocol=icmp
-add action=drop chain=input comment="7 Drop WAN  Firewall" in-interface=ether1
-add action=drop chain=input comment="8 Drop all other input" log=yes log-prefix="DROP-IN "
-add action=accept chain=forward comment="10 Allow established/related" connection-state=established,related
-add action=drop chain=forward comment="11 Drop invalid" connection-state=invalid
-add action=accept chain=forward comment="12 Allow Infra" src-address-list=NET_INFRA
-add action=accept chain=forward comment="13 Admin full access" src-address-list=NET_ADMIN
-add action=drop chain=forward comment="Block Akademik -> Admin" dst-address-list=NET_ADMIN log=yes log-prefix="AKD->ADMIN DROP" \
+add action=accept chain=input comment="Allow Established/Related Connections" connection-state=\
+    established,related,untracked
+add action=drop chain=input comment="Drop Invalid Connections" connection-state=invalid
+add action=accept chain=input comment="Allow Admin Access (SSH/Winbox)" src-address-list=NET_ADMIN
+add action=accept chain=input comment="Allow ICMP (Ping) - Limited" limit=5,10:packet protocol=icmp
+add action=drop chain=input comment="DROP ALL other Traffic to Firewall"
+add action=accept chain=forward comment="FastTrack Established/Related" connection-state=\
+    established,related,untracked
+add action=drop chain=forward comment="Drop Invalid" connection-state=invalid
+add action=jump chain=forward comment="Jump: Traffic FROM Admin" jump-target=from_admin \
+    src-address-list=NET_ADMIN
+add action=jump chain=forward comment="Jump: Traffic FROM Akademik" jump-target=from_akademik \
     src-address-list=NET_AKADEMIK
-add action=drop chain=forward comment="Block Akademik -> Mahasiswa" dst-address-list=NET_MAHASISWA log=yes log-prefix="AKD->MHS DROP" \
-    src-address-list=NET_AKADEMIK
-add action=drop chain=forward comment="Block Akademik -> Guest" dst-address-list=NET_GUEST log=yes log-prefix="AKD->GUEST DROP" \
-    src-address-list=NET_AKADEMIK
-add action=accept chain=forward comment="Allow Akademik ping DNS" dst-address=10.20.60.11 protocol=icmp src-address-list=NET_AKADEMIK
-add action=drop chain=forward comment="Block Akademik -> DMZ" dst-address-list=NET_DMZ log=yes log-prefix="AKD->DMZ DROP" \
-    src-address-list=NET_AKADEMIK
-add action=drop chain=forward dst-address-list=NET_IOT log=yes log-prefix=DROP-AKD-IOT src-address-list=NET_AKADEMIK
-add action=accept chain=forward comment="14 Akademik -> Internet" out-interface=ether1 src-address-list=NET_AKADEMIK
-add action=accept chain=forward comment="15 Akademik -> IoT limited" dst-address-list=NET_IOT limit=15,5:packet src-address-list=\
-    NET_AKADEMIK
-add action=accept chain=forward comment="31 Akademik -> DNS internal (UDP)" dst-address=10.20.60.11 dst-port=53 protocol=udp \
-    src-address-list=NET_AKADEMIK
-add action=accept chain=forward comment="32 Akademik -> DNS internal (TCP)" dst-address=10.20.60.11 dst-port=53 protocol=tcp \
-    src-address-list=NET_AKADEMIK
-add action=accept chain=forward comment="16 IoT -> Internet" out-interface=ether1 src-address-list=NET_IOT
-add action=accept chain=forward comment="17 IoT -> Akademik limited" dst-address-list=NET_AKADEMIK limit=5,2:packet src-address-list=\
-    NET_IOT
-add action=drop chain=forward comment="23 Block IoT -> DMZ" dst-address-list=NET_DMZ log=yes log-prefix="IOT->DMZ DROP" src-address-list=\
-    NET_IOT
-add action=accept chain=forward comment="33 IoT -> DNS internal UDP" dst-address=10.20.60.11 dst-port=53 protocol=udp src-address-list=\
-    NET_IOT
-add action=accept chain=forward comment="34 IoT -> DNS internal TCP" dst-address=10.20.60.11 dst-port=53 protocol=tcp src-address-list=\
-    NET_IOT
-add action=drop chain=forward comment="35 Block Mahasiswa external DNS UDP" dst-port=53 log=yes log-prefix="STU-DNS-UDP DROP" protocol=\
-    udp src-address-list=NET_MAHASISWA
-add action=drop chain=forward comment="36 Block Mahasiswa external DNS TCP" dst-port=53 log=yes log-prefix="STU-DNS-TCP DROP" protocol=\
-    tcp src-address-list=NET_MAHASISWA
-add action=accept chain=forward comment="18 Mahasiswa -> Internet only" limit=10,5:packet out-interface=ether1 src-address-list=\
-    NET_MAHASISWA
-add action=accept chain=forward comment="27 Mahasiswa -> DNS internal UDP" dst-address=10.20.60.11 dst-port=53 protocol=udp \
+add action=jump chain=forward comment="Jump: Traffic FROM Mahasiswa" jump-target=from_mahasiswa \
     src-address-list=NET_MAHASISWA
-add action=accept chain=forward comment="28 Mahasiswa -> DNS internal TCP" dst-address=10.20.60.11 dst-port=53 protocol=tcp \
-    src-address-list=NET_MAHASISWA
-add action=drop chain=forward comment="24 Block Mahasiswa -> DMZ" dst-address-list=NET_DMZ log=yes log-prefix="MHS->DMZ DROP" \
-    src-address-list=NET_MAHASISWA
-add action=drop chain=forward comment="37 Block Guest external DNS UDP" dst-port=53 log=yes log-prefix="GUEST-DNS-UDP DROP" protocol=udp \
+add action=jump chain=forward comment="Jump: Traffic FROM IoT" jump-target=from_iot \
+    src-address-list=NET_IOT
+add action=jump chain=forward comment="Jump: Traffic FROM Guest" jump-target=from_guest \
     src-address-list=NET_GUEST
-add action=drop chain=forward comment="38 Block Guest external DNS TCP" dst-port=53 log=yes log-prefix="GUEST-DNS-TCP DROP" protocol=tcp \
-    src-address-list=NET_GUEST
-add action=accept chain=forward comment="19 Guest -> Internet only" limit=10,5:packet out-interface=ether1 src-address-list=NET_GUEST
-add action=accept chain=forward comment="29 Guest -> DNS internal UDP" dst-address=10.20.60.11 dst-port=53 protocol=udp src-address-list=\
-    NET_GUEST
-add action=accept chain=forward comment="30 Guest -> DNS internal TCP" dst-address=10.20.60.11 dst-port=53 protocol=tcp src-address-list=\
-    NET_GUEST
-add action=drop chain=forward comment="25 Block Guest -> DMZ" dst-address-list=NET_DMZ log=yes log-prefix="GUEST->DMZ DROP" \
-    src-address-list=NET_GUEST
-add action=accept chain=forward comment="20 DMZ -> Internet" out-interface=ether1 src-address-list=NET_DMZ
-add action=accept chain=forward comment="26 Internet -> DMZ (HTTP/HTTPS)" dst-address-list=NET_DMZ dst-port=80,443 in-interface=ether1 \
-    protocol=tcp
-add action=drop chain=forward comment="40 Drop all other forward" log=yes log-prefix=DROP-FWD
+add action=jump chain=forward comment="Jump: Traffic FROM DMZ" jump-target=from_dmz \
+    src-address-list=NET_DMZ
+add action=accept chain=from_admin comment="Admin -> ANY"
+add action=accept chain=from_akademik comment="Akademik -> Internet" out-interface=ether1
+add action=accept chain=from_akademik comment="Akademik -> DNS (Internal)" dst-address=10.20.60.11 \
+    dst-port=53 protocol=udp
+add action=accept chain=from_akademik comment="Akademik -> DNS (Internal)" dst-address=10.20.60.11 \
+    dst-port=53 protocol=tcp
+add action=accept chain=from_akademik comment="Akademik -> IoT (Data Collection)" dst-address-list=\
+    NET_IOT
+add action=drop chain=from_akademik comment="DROP Akademik -> Any Internal" dst-address=10.0.0.0/8 \
+    log=yes log-prefix=AKD_BLOCK:
+add action=accept chain=from_mahasiswa comment="MHS -> DNS (Internal)" dst-address=10.20.60.11 \
+    dst-port=53 protocol=udp
+add action=accept chain=from_mahasiswa comment="MHS -> DNS (Internal)" dst-address=10.20.60.11 \
+    dst-port=53 protocol=tcp
+add action=drop chain=from_mahasiswa comment="BLOCK MHS -> Internal Networks" dst-address=\
+    10.0.0.0/8 log=yes log-prefix=MHS_BLOCKED:
+add action=accept chain=from_mahasiswa comment="MHS -> Internet" out-interface=ether1
+add action=accept chain=from_guest comment="Guest -> DNS (Internal)" dst-address=10.20.60.11 \
+    dst-port=53 protocol=udp
+add action=drop chain=from_guest comment="BLOCK Guest -> Internal Networks" dst-address=10.0.0.0/8 \
+    log=yes log-prefix=GUEST_BLOCK:
+add action=accept chain=from_guest comment="Guest -> Internet" out-interface=ether1
+add action=accept chain=from_iot comment="IoT -> MQTT Server (If needed)" dst-address=10.20.30.20 \
+    dst-port=1883 protocol=tcp
+add action=accept chain=from_iot comment="IoT -> Internet" out-interface=ether1
+add action=drop chain=from_iot comment="DROP IoT -> All Internal" log=yes log-prefix=IOT_BLOCK:
+add action=accept chain=from_dmz comment="DMZ -> Internet (Updates)" out-interface=ether1
+add action=drop chain=from_dmz comment="DROP DMZ -> Internal (Safety Net)" dst-address=10.0.0.0/8 \
+    log=yes log-prefix=DMZ_BLOCK:
+add action=accept chain=forward comment="Allow Public Internet to DMZ" dst-address-list=NET_DMZ \
+    dst-port=80,443,25,587,993 in-interface=ether1 protocol=tcp
+add action=drop chain=forward comment="DROP ALL Unexpected Forward Traffic" log=yes log-prefix=\
+    FINAL_DROP:
 /ip route
 add dst-address=0.0.0.0/0 gateway=10.0.0.1
 add dst-address=10.20.40.0/24 gateway=10.1.40.2
@@ -202,7 +189,7 @@ Here is the configuration export for the MikroTik Router for the Admin
 
 ```bash
 [admin@Admin] > /export
-# 2025-11-20 07:24:13 by RouterOS 7.16
+# 2025-11-21 11:10:29 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
@@ -227,6 +214,9 @@ add address=10.20.40.1/24 interface=ether2 network=10.20.40.0
 add address=10.20.40.0/24 dns-server=8.8.8.8 gateway=10.20.40.1
 /ip route
 add dst-address=0.0.0.0/0 gateway=10.1.40.1
+/ip service
+set www disabled=yes
+set ssh address=10.20.40.0/24
 /system identity
 set name=Admin
 /system note
@@ -239,7 +229,7 @@ Here is the configuration export for the MikroTik Router for the Akademik
 
 ```bash 
 [admin@Akademik] > /export
-# 2025-11-20 07:01:38 by RouterOS 7.16
+# 2025-11-21 11:09:57 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
@@ -264,6 +254,14 @@ add address=10.20.20.1/24 interface=ether2 network=10.20.20.0
 add address=10.20.20.0/24 dns-server=8.8.8.8 gateway=10.20.20.1
 /ip route
 add dst-address=0.0.0.0/0 gateway=10.1.20.1
+add comment="route -> Mahasiswa" dst-address=10.20.8.0/22 gateway=10.1.20.1
+add comment="route -> Riset&IoT" dst-address=10.20.30.0/24 gateway=10.1.20.1
+add comment="route -> Admin" dst-address=10.20.40.0/24 gateway=10.1.20.1
+add comment="route -> Guest" dst-address=10.20.48.0/22 gateway=10.1.20.1
+add comment="route -> DMZ/DNS" dst-address=10.20.60.0/24 gateway=10.1.20.1
+/ip service
+set www disabled=yes
+set ssh address=10.20.40.0/24
 /system identity
 set name=Akademik
 /system note
@@ -276,7 +274,7 @@ Here is the configuration export for the MikroTik Router for the Riset & IoT
 
 ```bash
 [admin@Riset-dan-IOT] > /export
-# 2025-11-20 07:00:06 by RouterOS 7.16
+# 2025-11-21 11:09:22 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
@@ -301,6 +299,9 @@ add address=10.20.30.1/24 interface=ether2 network=10.20.30.0
 add address=10.20.30.0/24 dns-server=8.8.8.8 gateway=10.20.30.1
 /ip route
 add dst-address=0.0.0.0/0 gateway=10.1.30.1
+/ip service
+set www disabled=yes
+set ssh address=10.20.40.0/24
 /system identity
 set name=Riset-dan-IOT
 /system note
@@ -313,7 +314,7 @@ Here is the configuration export for the MikroTik Router for the Mahasiswa
 
 ```bash 
 [admin@Mahasiswa] > /export
-# 2025-11-20 06:56:50 by RouterOS 7.16
+# 2025-11-21 11:08:36 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
@@ -335,9 +336,12 @@ set 0 name=serial0
 add address=10.1.10.2/30 interface=ether1 network=10.1.10.0
 add address=10.20.10.1/22 interface=ether2 network=10.20.8.0
 /ip dhcp-server network
-add address=10.20.8.0/22 dns-server=8.8.8.8 gateway=10.20.10.1
+add address=10.20.8.0/22 dns-server=10.20.60.11 gateway=10.20.10.1
 /ip route
-add dst-address=0.0.0.0/0 gateway=10.1.10.1
+add comment="Default to Firewall" dst-address=0.0.0.0/0 gateway=10.1.10.1
+/ip service
+set www disabled=yes
+set ssh address=10.20.40.0/24
 /system identity
 set name=Mahasiswa
 /system note
@@ -350,7 +354,7 @@ Here is the configuration export for the MikroTik Router for the Guest
 
 ```bash
 [admin@Guest] > /export
-# 2025-11-20 06:54:37 by RouterOS 7.16
+# 2025-11-21 11:07:47 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
@@ -375,10 +379,13 @@ add address=10.20.50.1/22 interface=ether2 network=10.20.48.0
 add address=10.20.48.0/22 dns-server=8.8.8.8 gateway=10.20.50.1
 /ip route
 add dst-address=0.0.0.0/0 gateway=10.1.50.1
+/ip service
+set www disabled=yes
+set ssh address=10.20.40.0/24
 /system identity
 set name=Guest
 /system note
-set show-at-login=**no**
+set show-at-login=no
 ```
 
 ### 8. DMZ Configuration Export
@@ -387,7 +394,7 @@ Here is the configuration export for the MikroTik Router for the DMZ
 
 ```bash
 [admin@DMZ] > /export
-# 2025-11-20 06:52:35 by RouterOS 7.16
+# 2025-11-21 11:06:30 by RouterOS 7.16
 # software id =
 #
 /interface ethernet
@@ -419,6 +426,9 @@ add action=drop chain=input comment="DROP All External Access" in-interface=ethe
 add action=masquerade chain=srcnat comment="Internet Access" out-interface=ether1
 /ip route
 add dst-address=0.0.0.0/0 gateway=10.1.60.1
+/ip service
+set www disabled=yes
+set ssh address=10.20.40.0/24
 /system identity
 set name=DMZ
 /system note

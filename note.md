@@ -176,7 +176,7 @@ Other than the 3rd step from above, we can also use this method:
 
 ---
 
-## F. Network Defense Layers Testing
+## E. Network Defense Layers Testing
 
 ### 1. Mahasiswa Service
 
@@ -711,14 +711,14 @@ curl http://10.20.30.1
 
 ---
 
-## G. Network Attack Testing
+## F. Network Attack Testing
 
 To test the effectiveness of our firewall, we need to test them out with real attacks. Here are the step-by-step attacks we're going to do: 
 
 **Prerequisite** Attack Tools Installation
 
 ```bash 
-sudo apt update && sudo apt install nmap hping3 -y
+sudo apt update && sudo apt install nmap hping3 mosquitto-clients -y
 ```
 
 ### Attack Scenario 1: Reconnaissance (Port Scanning)
@@ -786,3 +786,15 @@ Here is when I tried running the debug (`-d`) feature to know where it is interr
 ![attack-brute-force-ssh-debug](images/attack-brute-force-ssh-debug.png)
 
 - Result: The attack immediately got brushed off, meaning that the brute-force attack didn't even get the chance to access the login form. As can be seen on the `debug`, it ran into an error when initiating a connection.
+
+### Attack Scenario 4: MQTT Exploit 
+
+Here the attack is about to exploit the vulnerability to gain anonymous access. But the firewall should prevent this by using the **Zero Trust Architecture (ZTA)** to not giving access to any of the anonymous actors.
+
+1. **The Attack (Run on PC-MAHASISWA)** to use the MQTT Anonymous Login Access.
+
+```bash 
+mosquitto_sub -h 10.20.30.10 -t "#" -v
+```
+
+![attack-mqtt](images/attack-mqtt.png)
