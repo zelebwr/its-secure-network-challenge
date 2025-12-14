@@ -9,7 +9,8 @@ Here is the network  topology for out Network Security Challenge.
 ```mermaid
 graph TD;
     NAT1-->EdgeRouter;
-    EdgeRouter-->Firewall;
+    EdgeRouter--> IPS-Server --> Firewall;
+    Firewall --> IDS-Server;
     Firewall-->Admin & Mahasiswa & Akademik & Riset&IoT & Guest & DMZ;
     Admin-->Switch1-->AuthenticationServer & MonitoringServer & PC-ADMIN;
     Akademik-->Switch2-->FileServer & DatabaseServer & PC-AKADEMIK;
@@ -51,14 +52,14 @@ graph TD;
 
 This table will explain the **CIDR** allocations.
 
-| **Department**  | **Network Address** | **Prefix** | **Usable Host Range** | **Gateway IP** |     |
-| --------------- | ------------------- | ---------- | --------------------- | -------------- | --- |
-| **Admin**       | `10.20.40.0`        | `/24`      | `.2` to `.254`        | `10.20.40.1`   |     |
-| **Akademik**    | `10.20.20.0`        | `/24`      | `.2` to `.254`        | `10.20.20.1`   |     |
-| **Riset & IoT** | `10.20.30.0`        | `/24`      | `.2` to `.254`        | `10.20.30.1`   |     |
-| **DMZ Servers** | `10.20.60.0`        | `/24`      | `.2` to `.254`        | `10.20.60.1`   |     |
-| **Mahasiswa**   | `10.20.8.0`*        | `/22`      | `8.1` to `11.254`     | `10.20.10.1`   |     |
-| **Guest**       | `10.20.48.0`*       | `/22`      | `48.1` to `51.254`    | `10.20.50.1`   |     |
+| **Department**  | **Network Address** | **Prefix** | **Usable Host Range** | **Gateway IP** |
+| --------------- | ------------------- | ---------- | --------------------- | -------------- |
+| **Admin**       | `10.20.40.0`        | `/24`      | `.2` to `.254`        | `10.20.40.1`   |
+| **Akademik**    | `10.20.20.0`        | `/24`      | `.2` to `.254`        | `10.20.20.1`   |
+| **Riset & IoT** | `10.20.30.0`        | `/24`      | `.2` to `.254`        | `10.20.30.1`   |
+| **DMZ Servers** | `10.20.60.0`        | `/24`      | `.2` to `.254`        | `10.20.60.1`   |
+| **Mahasiswa**   | `10.20.8.0`*        | `/22`      | `8.1` to `11.254`     | `10.20.10.1`   |
+| **Guest**       | `10.20.48.0`*       | `/22`      | `48.1` to `51.254`    | `10.20.50.1`   |
 
 *Note: For the /22 networks, the IP address `.10.1` and `.50.1` fall comfortably inside the valid range of their respective blocks.
 

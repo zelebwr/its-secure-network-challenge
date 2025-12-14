@@ -28,28 +28,33 @@ Tantangan Utama :
 Kalian diminta untuk menjawab pertanyaan-pertanyaan besar berikut melalui sistem yang kalian bangun:
 
 ### 1. Bagaimana kalian mendefinisikan “keamanan yang seimbang” untuk jaringan kampus ini?
+
 - Siapa saja yang boleh mengakses layanan akademik, server, dan riset?
 - Siapa yang tidak boleh?
 - Bagaimana memastikan keamanan tanpa menghambat kolaborasi antar departemen?
 💡 Hasil diharapkan: rancangan kebijakan ACL dan firewall yang menggambarkan filosofi keamanan kalian sendiri.
 
 ### 2. Jika terjadi serangan internal, apa bentuk “pertahanan berlapis” yang paling efektif?
+
 - Buat asumsi jenis serangan realistis yang mungkin terjadi di jaringan kampus (misalnya sniffing, scanning, DDoS mini, privilege abuse).
 - Desain sistem berlapis yang mampu mendeteksi, menghambat, atau memitigasi serangan itu.
 💡 Hasil diharapkan: bukti konfigurasi dan hasil simulasi serangan + mitigasi.
 
 ### 3. Bagaimana kalian membuktikan bahwa sistem kalian “benar-benar bekerja”?
+
 - Apa indikator keamanan yang kalian pakai untuk mengukur efektivitasnya?
 - Bagaimana cara menguji bahwa ACL dan firewall berfungsi sesuai harapan (tanpa false positive/negative berlebihan)?
 - Bagaimana kalian memverifikasi performa (latency, availability) tetap layak?
 💡 Hasil diharapkan: metode pengujian dan hasil evaluasi performa.
 
 ### 4. Bagaimana kalian merancang sistem yang tetap adaptif?
+
 - Bayangkan jaringan ini akan terus berkembang: penambahan lab baru, server cloud, atau dosen tamu.
 - Apakah sistem kalian mudah diperluas tanpa mengulang semuanya dari awal?
 💡 Hasil diharapkan: rancangan desain modular, dokumentasi perubahan, atau simulasi penambahan jaringan baru.
 
 ## Output yang Diharapkan
+
 Dokumen laporan singkat (maks. 8 halaman)
 Berisi:
 - Desain topologi akhir (bisa dimodifikasi dari standar)
