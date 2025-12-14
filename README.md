@@ -64,7 +64,14 @@ Departemen Teknologi Informasi ITS melaporkan adanya indikasi kebocoran data dar
 - **Riset & IoT** (10.20.30.0/24)
 - **Admin** (10.20.40.0/24)
 
-**Posisi IDS:** Router Firewall (Core/Backbone) - dipilih karena merupakan choke point terpusat untuk memonitor semua traffic antar-subnet.
+**Posisi IDS:** Router Firewall (Core/Backbone)
+
+| Strategi | Manfaat |
+|----------|---------|
+| **Choke Point Terpusat** | Visibilitas 360° untuk memantau Lateral Movement antar-subnet |
+| **Efisiensi Resource** | Deep Packet Inspection dipusatkan pada perangkat Core |
+| **Defense in Depth** | Integrasi langsung antara IDS dan Firewall |
+| **Bypass NAT** | IP asli penyerang tetap terlihat untuk forensik |
 
 ### 2.2. Persiapan Sistem
 
