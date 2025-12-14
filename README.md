@@ -67,7 +67,17 @@ c. Data exfiltration kecil via HTTP (file transfer dari server riset)
 **Posisi IDS:**
 Kami menempatkan modul IDS (Intrusion Detection System) secara strategis pada **Router Firewall (Core/Backbone)** yang menghubungkan seluruh subnet.
 
+
 **Alasan Teknis & Strategis:**
+Penempatan sistem deteksi dan pertahanan pada proyek ini difokuskan pada **Centralized Router Firewall**, yang berfungsi sebagai pusat kendali seluruh lalu lintas data (Choke Point). Berikut adalah analisis teknis dan strategis di balik keputusan tersebut:
+
+| Strategi Utama | Deskripsi Teknis & Manfaat | Dampak Operasional |
+| :--- | :--- | :--- |
+| **Dukungan Choke Point Terpusat** | Router Firewall menjadi titik temu (hub) traffic antar-zona (Mahasiswa, Riset, Guest, Internal). | **Visibilitas 360°:** Memantau *Lateral Movement* (pergerakan serangan antar-subnet) secara menyeluruh tanpa sensor di tiap cabang. |
+| **Efisiensi Resource** | Memusatkan beban inspeksi paket berat (Deep Packet Inspection) pada perangkat Core dengan spesifikasi tinggi. | **Resource Optimization:** Menghindari beban komputasi berlebih pada *Edge Router* yang memiliki keterbatasan spesifikasi. |
+| **Pertahanan Berlapis (Defense in Depth)** | Integrasi langsung antara log deteksi (IDS) dan eksekusi aturan pemblokiran pada satu perangkat. | **Respon Terpadu:** Memudahkan evaluasi efektivitas aturan blokir secara real-time terhadap traffic yang ditandai berbahaya. |
+| **Bypass NAT / Masquerade** | Sensor diletakkan di sisi internal router backbone sebelum paket terkena proses NAT. | **Akurasi Identitas:** Alamat IP asli penyerang (Source IP) tetap terlihat jelas, sehingga mempermudah proses investigasi dan forensik. |
+
 1.  **Dukungan "Choke Point" Terpusat**: Router Firewall adalah titik temu (hub) dari traffic antar-zona (Mahasiswa ke Riset, Guest ke Internal, dll). Dengan memasang sensor di sini, kita mendapatkan visibilitas 360 derajat terhadap *Lateral Movement* (pergerakan serangan antar-subnet) tanpa perlu memasang sensor di setiap router cabang.
 2.  **Efisiensi Resource**: Alih-alih membebani setiap Edge Router dengan proses inspeksi paket, beban komputasi deteksi dipusatkan pada perangkat Core yang memiliki spesifikasi lebih tinggi.
 3.  **Pertahanan Berlapis (Defense in Depth)**: Penempatan ini memungkinkan integrasi langsung antara IDS (Deteksi) dan Firewall (Blokir). Traffic yang ditandai berbahaya oleh IDS (Log) dapat langsung dievaluasi efektivitas aturan blokirnya di perangkat yang sama.
