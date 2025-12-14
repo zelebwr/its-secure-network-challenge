@@ -78,10 +78,6 @@ Penempatan sistem deteksi dan pertahanan pada proyek ini difokuskan pada **Centr
 | **Pertahanan Berlapis (Defense in Depth)** | Integrasi langsung antara log deteksi (IDS) dan eksekusi aturan pemblokiran pada satu perangkat. | **Respon Terpadu:** Memudahkan evaluasi efektivitas aturan blokir secara real-time terhadap traffic yang ditandai berbahaya. |
 | **Bypass NAT / Masquerade** | Sensor diletakkan di sisi internal router backbone sebelum paket terkena proses NAT. | **Akurasi Identitas:** Alamat IP asli penyerang (Source IP) tetap terlihat jelas, sehingga mempermudah proses investigasi dan forensik. |
 
-1.  **Dukungan "Choke Point" Terpusat**: Router Firewall adalah titik temu (hub) dari traffic antar-zona (Mahasiswa ke Riset, Guest ke Internal, dll). Dengan memasang sensor di sini, kita mendapatkan visibilitas 360 derajat terhadap *Lateral Movement* (pergerakan serangan antar-subnet) tanpa perlu memasang sensor di setiap router cabang.
-2.  **Efisiensi Resource**: Alih-alih membebani setiap Edge Router dengan proses inspeksi paket, beban komputasi deteksi dipusatkan pada perangkat Core yang memiliki spesifikasi lebih tinggi.
-3.  **Pertahanan Berlapis (Defense in Depth)**: Penempatan ini memungkinkan integrasi langsung antara IDS (Deteksi) dan Firewall (Blokir). Traffic yang ditandai berbahaya oleh IDS (Log) dapat langsung dievaluasi efektivitas aturan blokirnya di perangkat yang sama.
-4.  **Bypass NAT/Masquerade**: Karena dipasang di sisi internal router backbone, IDS dapat melihat alamat IP asli (Source IP) dari penyerang (misal: `10.20.10.x` milik Mahasiswa), berbeda dengan jika dipasang di sisi luar Edge Router yang mungkin sudah terkena NAT.
 
 ## 3. Konfigurasi & Pemasangan IDS
 
