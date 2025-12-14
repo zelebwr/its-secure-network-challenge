@@ -55,8 +55,8 @@ c. Data exfiltration kecil via HTTP (file transfer dari server riset)
 - **Anggota**: 
     - Arya Bisma Putra Refman
     - Jonathan Zelig Sutopo
-    - M. Alfaeran Auriga Ruswandi, Tiara
-    - Fatimah Azzahra
+    - M. Alfaeran Auriga Ruswandi
+    - Tiara Fatimah Azzahra
 - **Judul**: Deteksi Serangan Menggunakan IDS (Mikrotik Layer-7 Protocol)
 
 ## 2. Topologi & Penempatan IDS
