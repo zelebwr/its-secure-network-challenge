@@ -503,7 +503,7 @@ Log di atas menunjukkan deteksi Port Scanning oleh IDS:
 - **Connection State**: `new` - setiap SYN packet adalah koneksi baru
 - **PSD Match**: Threshold PSD terlampaui (lebih dari 21 port dalam 3 detik)
 
-> **Status: ✅ TERDETEKSI** - Alert `[IDS-PORT-SCAN]` muncul di log
+> **Status: TERDETEKSI** - Alert `[IDS-PORT-SCAN]` muncul di log
 
 ### 4.3. Brute Force SSH Attack
 
@@ -534,7 +534,7 @@ Log di atas menunjukkan deteksi SSH Brute Force oleh IDS:
 - **Connection State**: `new` - menghitung koneksi baru ke port 22
 - **Rate**: Melebihi threshold 4 koneksi baru per menit
 
-> **Status: ✅ TERDETEKSI** - Alert `[IDS-SSH-BRUTE]` muncul di log
+> **Status: TERDETEKSI** - Alert `[IDS-SSH-BRUTE]` muncul di log
 
 ### 4.4. Data Exfiltration (HTTP LFI)
 
@@ -564,7 +564,7 @@ Log di atas menunjukkan deteksi Data Exfiltration oleh IDS:
 - **Protocol**: TCP (HTTP)
 - **Content Match**: String `etc/passwd` ditemukan dalam HTTP request
 
-> **Status: ✅ TERDETEKSI** - Alert `[IDS-L7-EXFIL]` muncul di log
+> **Status: TERDETEKSI** - Alert `[IDS-L7-EXFIL]` muncul di log
 
 ### 4.5. Malware Injection (BlackSun)
 
@@ -601,7 +601,7 @@ Log di atas menunjukkan:
 - **Bidirectional Detection**: IDS mendeteksi baik request maupun response
 - **Multiple Alerts**: Beberapa alert karena Layer-7 memeriksa setiap paket
 
-> **Status: ✅ TERDETEKSI** - Alert `[IDS-ALERT-BLACKSUN]` muncul di log
+> **Status: TERDETEKSI** - Alert `[IDS-ALERT-BLACKSUN]` muncul di log
 
 ### 4.6. Web Attack - SQL Injection
 
@@ -634,7 +634,7 @@ Log di atas menunjukkan:
 - **Layer-7 Inspection**: IDS membaca isi POST data
 - **Multiple Rules Match**: Alert SQLi dan L7-EXFIL keduanya terpicu
 
-> **Status: ✅ TERDETEKSI** - Alert `[IDS-ALERT-SQLi]` muncul di log
+> **Status: TERDETEKSI** - Alert `[IDS-ALERT-SQLi]` muncul di log
 
 ### 4.7. Server Compromise Check (Root Response)
 
@@ -666,18 +666,18 @@ Log di atas menunjukkan:
 - **Response Detection**: IDS mendeteksi pada **response** dari server (in:ether1 out:ether5)
 - **Critical Alert**: Ini adalah indikator bahwa server mungkin telah dicompromise
 
-> **Status: ✅ TERDETEKSI** - Alert `[IDS-ALERT-ROOT]` muncul di log
+> **Status: TERDETEKSI** - Alert `[IDS-ALERT-ROOT]` muncul di log
 
 ### 4.8. Ringkasan Hasil Simulasi Serangan
 
 | No | Jenis Serangan | Command | Status | Alert Generated |
 |----|----------------|---------|--------|-----------------|
-| 1 | Port Scanning | `nmap -Pn -sS -F` | ✅ Terdeteksi | `[IDS-PORT-SCAN]` |
-| 2 | SSH Brute Force | `ssh user@target` (10x) | ✅ Terdeteksi | `[IDS-SSH-BRUTE]` |
-| 3 | Password Theft (LFI) | `curl ".../etc/passwd"` | ✅ Terdeteksi | `[IDS-ALERT-PASSWD]` |
-| 4 | Malware BlackSun | `curl -A "BlackSun"` | ✅ Terdeteksi | `[IDS-ALERT-BLACKSUN]` |
-| 5 | SQL Injection | `curl -d "UNION SELECT"` | ✅ Terdeteksi | `[IDS-ALERT-SQLi]` |
-| 6 | Root Response | `curl .../uid/index.html` | ✅ Terdeteksi | `[IDS-ALERT-ROOT]` |
+| 1 | Port Scanning | `nmap -Pn -sS -F` | Terdeteksi | `[IDS-PORT-SCAN]` |
+| 2 | SSH Brute Force | `ssh user@target` (10x) | Terdeteksi | `[IDS-SSH-BRUTE]` |
+| 3 | Password Theft (LFI) | `curl ".../etc/passwd"` | Terdeteksi | `[IDS-ALERT-PASSWD]` |
+| 4 | Malware BlackSun | `curl -A "BlackSun"` | Terdeteksi | `[IDS-ALERT-BLACKSUN]` |
+| 5 | SQL Injection | `curl -d "UNION SELECT"` | Terdeteksi | `[IDS-ALERT-SQLi]` |
+| 6 | Root Response | `curl .../uid/index.html` | Terdeteksi | `[IDS-ALERT-ROOT]` |
 
 ---
 
@@ -689,23 +689,23 @@ Berdasarkan pengujian yang dilakukan, berikut adalah analisis mendalam mengenai 
 
 | No | Jenis Serangan | Status | Akurasi | Catatan |
 |----|----------------|--------|---------|---------|
-| 1 | Port Scanning | ✅ Terdeteksi | Tinggi | Efektif untuk scan agresif |
-| 2 | SSH Brute Force | ✅ Terdeteksi | Sedang | Sensitif terhadap threshold |
-| 3 | Password Theft (LFI) | ✅ Terdeteksi | Sangat Tinggi | Pattern matching akurat |
-| 4 | Malware BlackSun | ✅ Terdeteksi | Sangat Tinggi | User-Agent detection |
-| 5 | SQL Injection | ✅ Terdeteksi | Tinggi | Pattern "UNION SELECT" terdeteksi |
-| 6 | Root Response | ✅ Terdeteksi | Sangat Tinggi | Mendeteksi server compromise |
+| 1 | Port Scanning | Terdeteksi | Tinggi | Efektif untuk scan agresif |
+| 2 | SSH Brute Force | Terdeteksi | Sedang | Sensitif terhadap threshold |
+| 3 | Password Theft (LFI) | Terdeteksi | Sangat Tinggi | Pattern matching akurat |
+| 4 | Malware BlackSun | Terdeteksi | Sangat Tinggi | User-Agent detection |
+| 5 | SQL Injection | Terdeteksi | Tinggi | Pattern "UNION SELECT" terdeteksi |
+| 6 | Root Response | Terdeteksi | Sangat Tinggi | Mendeteksi server compromise |
 
 ### 5.2. Akurasi & Sensitivitas Deteksi
 
 | Jenis Serangan | Tingkat Deteksi | Analisis |
 |----------------|-----------------|----------|
-| **Port Scanning (PSD)** | ⭐⭐⭐⭐ Tinggi | Sangat efektif mendeteksi scanning agresif (Nmap default). Namun memiliki kelemahan terhadap teknik *Stealth Scan* (misal: `-T1` timing template) yang mengirim paket sangat lambat untuk menghindari threshold waktu 3 detik. |
-| **SSH Brute Force** | ⭐⭐⭐ Sedang | Efektif mendeteksi serangan brute force cepat. Namun sensitif terhadap aktivitas administrasi yang sah jika admin melakukan beberapa koneksi SSH dalam waktu singkat. |
-| **Malware BlackSun** | ⭐⭐⭐⭐⭐ Sangat Tinggi | User-Agent "BlackSun" sangat spesifik dan tidak mungkin muncul di traffic normal. False positive rate sangat rendah. |
-| **Password Theft (LFI)** | ⭐⭐⭐⭐⭐ Sangat Tinggi | Pattern `etc/passwd` sangat unik, kemungkinan alert ini muncul akibat traffic normal hampir 0%. High fidelity alert. |
-| **SQL Injection** | ⭐⭐⭐⭐ Tinggi | Pattern "UNION SELECT" efektif mendeteksi SQLi umum. Perlu penambahan pattern untuk variasi lain seperti `OR 1=1`, `DROP TABLE`, dll. |
-| **Root Response** | ⭐⭐⭐⭐⭐ Sangat Tinggi | Deteksi `uid=0(root)` pada response mengindikasikan server compromise. Critical alert dengan false positive rate sangat rendah. |
+| **Port Scanning (PSD)** | Tinggi | Sangat efektif mendeteksi scanning agresif (Nmap default). Namun memiliki kelemahan terhadap teknik *Stealth Scan* (misal: `-T1` timing template) yang mengirim paket sangat lambat untuk menghindari threshold waktu 3 detik. |
+| **SSH Brute Force** | Sedang | Efektif mendeteksi serangan brute force cepat. Namun sensitif terhadap aktivitas administrasi yang sah jika admin melakukan beberapa koneksi SSH dalam waktu singkat. |
+| **Malware BlackSun** | Sangat Tinggi | User-Agent "BlackSun" sangat spesifik dan tidak mungkin muncul di traffic normal. False positive rate sangat rendah. |
+| **Password Theft (LFI)** | Sangat Tinggi | Pattern `etc/passwd` sangat unik, kemungkinan alert ini muncul akibat traffic normal hampir 0%. High fidelity alert. |
+| **SQL Injection** | Tinggi | Pattern "UNION SELECT" efektif mendeteksi SQLi umum. Perlu penambahan pattern untuk variasi lain seperti `OR 1=1`, `DROP TABLE`, dll. |
+| **Root Response** | Sangat Tinggi | Deteksi `uid=0(root)` pada response mengindikasikan server compromise. Critical alert dengan false positive rate sangat rendah. |
 
 ### 5.3. Manajemen False Positives
 
@@ -747,9 +747,9 @@ Proyek **"Operasi Mata Elang"** berhasil membuktikan bahwa Router Firewall (Mikr
 
 | Vektor Serangan | Kategori MITRE ATT&CK | Status |
 |-----------------|----------------------|--------|
-| Port Scanning | **Reconnaissance** (TA0043) | ✅ Terdeteksi |
-| SSH Brute Force | **Credential Access** (TA0006) | ✅ Terdeteksi |
-| LFI Exfiltration | **Exfiltration** (TA0010) | ✅ Terdeteksi |
+| Port Scanning | **Reconnaissance** (TA0043) | Terdeteksi |
+| SSH Brute Force | **Credential Access** (TA0006) | Terdeteksi |
+| LFI Exfiltration | **Exfiltration** (TA0010) | Terdeteksi |
 
 ### 6.2. Pencapaian Kunci
 
